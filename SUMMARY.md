@@ -1,3 +1,3 @@
 # Table of content
 
-* [First Chapter](chapter1.md)
+* [字典->模型:MJExtension](chapter1.md)
