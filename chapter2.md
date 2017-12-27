@@ -227,6 +227,7 @@ All perform requests are canceled that have the same target as aTarget, argument
 
 
 3. **主窗口会在视图层次结构中找到一个最合适的视图来处理触摸事件，但是这仅仅是整个事件处理过程的第一步**
+4. **找到合适的视图控件后，就会调用视图控件的touches方法来作具体的事件处理**
 
 
 
