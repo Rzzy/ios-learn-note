@@ -109,6 +109,103 @@ UIView是UIResponder的子类，可以实现下列4个方法处理不同的触�
 // 事件产生的时间
 @property(nonatomic,readonly)NSTimeInterval timestamp;
 ```
++ UIEvent还提供了相应的方法可以获得在某个view上面的触摸对像（UITouch）
+
+***touches和event参数***
++ 一次完整的触摸过程，会经历3个状态：
+
+```object-c
+// 触摸开始：
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEven *)event
+
+// 触摸移动：
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+
+// 触摸结束：
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+
+// 触摸取消（可能会经历）：
+-(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+```
+***4个触摸事件处理方法中，都有NSSet *touches和UIEvent *event两个参数***
++ 一次完整的触摸过程中，只会产生一个事件对象，4个触摸方法都是同一个event参数
+
++ 如果两根手指同时触摸一个view，那么view只会调用一次touchesBegan:withEvent:方法，touches参数中装着2个UITouch对象
+
++ 如果这两根手指一前一后分开触摸同一个view，那么view会分别调用2次touchesBegan:withEvent:方法，并且每次调用时的touches参数中只包含一个UITouch对象
+
++ 根据touches中UITouch的个数可以判断出是单点触摸还是多点触摸
+
+#####Q：
+默认触摸方法NSSet里面只能获得一个UITouch对象,为什么?
+#####A：
+UIView默认不支持多点触控。也就是说不支持多只手指同时触摸。
+#####Q：
+如何让视图接收多点触摸?
+#####A：
+需要设置它的multipleTouchEnabled属性为YES，默认状态下这个属性值为NO，即视图默认不接收多点触摸。。
+#####Q：
+如何判断用户当前是双击还是单击?
+#####A：
+根据UITouch的tapCount属性的值。tapCount表示短时间内轻击屏幕的次数。因此可以根据tapCount判断单击、双击或更多的轻击。
+
+>根据tapCount点击的次数来设置当前视图的背景色(双击改变背景颜色)
+轻击操作很容易引起歧义，比如当用户点了一次之后，并不知道用户是想单击还是只是双击的一部分，或者点了两次之后并不知道用户是想双击还是继续点击。为了解决这个问题，一般可以使用“延迟调用”函数,或手势识别器
+
+1. 使用“延迟调用”函数
+
+```object-c
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    UITouch *touch = [touches anyObject];
+    if(touch.tapCount != 2){ // 如果不是双击
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(setBackgroundColor:)  object:[UIColor orangeColor]];
+    } else { // 延时1执行改变背景的方法
+        [self performSelector:@selector(setBackgroundColor:) withObject:[UIColor orangeColor] afterDelay:1.0];
+    }
+}
+```
+2. 使用Gesture Recognizer
+使用Gesture Recognizer识别就会简单许多，只需添加两个手势识别器，分别检测单击和双击事件，设置必要的属性即可
+
+```object-c
+- (id)init {  
+    if ((self = [super init])) {  
+    self.userInteractionEnabled = YES;  
+        UITapGestureRecognizer *singleTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleSingleTap:)];  
+        singleTapGesture.numberOfTapsRequired = 1;  
+        singleTapGesture.numberOfTouchesRequired  = 1;  
+        [self addGestureRecognizer:singleTapGesture];  
+  
+        UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleDoubleTap:)];  
+        doubleTapGesture.numberOfTapsRequired = 2;  
+        doubleTapGesture.numberOfTouchesRequired = 1;  
+        [self addGestureRecognizer:doubleTapGesture];  
+  
+        [singleTapGesture requireGestureRecognizerToFail:doubleTapGesture];  
+    }  
+    return self;  
+}  
+-(void)handleSingleTap:(UIGestureRecognizer *)sender{  
+    CGPoint touchPoint = [sender locationInView:self];  
+    //...  
+}  
+-(void)handleDoubleTap:(UIGestureRecognizer *)sender{  
+    CGPoint touchPoint = [sender locationInView:self];  
+    //...  
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
