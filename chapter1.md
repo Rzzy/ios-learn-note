@@ -296,7 +296,28 @@ for (User *user in userArray) {
 ```
 
 **7、 将一个模型转成字典**
-
+核心代码`mj_keyValues`：
+```object-c
+User *user = [[User alloc] init];
+user.name = @"Jack";
+user.icon = @"lufy.png";
+//
+Status *status = [[Status alloc] init];
+status.user = user;
+status.text = @"Nice mood!";
+//
+//模型转字典，使用的是mj_keyValues属性
+NSDictionary *statusDict = status.mj_keyValues;
+NSLog(@"%@", statusDict);
+/*
+ {
+     text = "Nice mood!";
+     user =     {
+         icon = "lufy.png";
+         name = Jack;
+     };
+ }
+```
 
 
 
