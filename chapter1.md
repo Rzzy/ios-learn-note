@@ -153,15 +153,14 @@ NSDictionry dict_m8a = @{
         ],
         @"totalNumber" : @"2014"
     };
-【重点，核心】》》数组中存储模型数据，需要说明数组中存储的模型数据类型 《《
-/
+//【重点，核心】》》数组中存储模型数据，需要说明数组中存储的模型数据类型 
 [StatusResult mj_setupObjectClassInArray:^NSDictionary *{
-return @{
-@"statuses" : @"Status",
-// @"statuses" : [Status class],
-@"ads" : @"Ad"
-// @"ads" : [Ad class]
-};
+    return @{
+        @"statuses" : @"Status",
+        // @"statuses" : [Status class],
+        @"ads" : @"Ad"
+        // @"ads" : [Ad class]
+    };
 }];
 // Equals: StatusResult.m implements +mj_objectClassInArray method.
 */
