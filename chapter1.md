@@ -319,6 +319,34 @@ NSLog(@"%@", statusDict);
  }
 ```
 
+**8、将一个模型数组转成字典数组**
+核心代码` mj_keyValuesArrayWithObjectArray`：
+```object-c
+//创建模型数组
+    User *user1 = [[User alloc] init];
+    user1.name = @"Jack";
+    user1.icon = @"lufy.png";
+    User *user2 = [[User alloc] init];
+    user2.name = @"Rose";
+    user2.icon = @"nami.png";
+    NSArray *userArray = @[user1, user2];
+    //模型数组转字典数组，使用的是mj_keyValuesArrayWithObjectArray:方法
+    NSArray *dictArray = [User mj_keyValuesArrayWithObjectArray:userArray];
+    NSLog(@"%@", dictArray);
+    /*
+     (
+         {
+             icon = "lufy.png";
+             name = Jack;
+         },
+         {
+             icon = "nami.png";
+             name = Rose;
+         }
+     )
+     */
+```
+
 
 
 
