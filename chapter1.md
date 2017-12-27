@@ -351,6 +351,9 @@ NSLog(@"%@", statusDict);
      */
 ```
 
+**更多用法**
++ 参考NSObject+MJKeyValue.h
++ 参考NSObject+MJCoding.h
 
 
 
