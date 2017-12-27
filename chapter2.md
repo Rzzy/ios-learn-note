@@ -212,7 +212,19 @@ All perform requests are canceled that have the same target as aTarget, argument
 **不管是一个手指还是多个手指，轻击操作都会使每个触摸对象的tapCount加1，因此可以直接调用touches的anyObject方法来获取任意一个触摸对象然后判断其tapCount的值即可。*
 
 ####事件的产生和传递
-发生触摸事件后，系统会将该事件加入到一个由UIApplication管理的事件队列中, 为什么是队列而不是栈？因为队列的特定是先进先出，先产生的事件先处理才符合常理，所以把事件添加到队列。
+1. 发生触摸事件后，系统会将该事件加入到一个由UIApplication管理的事件队列中, 为什么是队列而不是栈？因为队列的特定是先进先出，先产生的事件先处理才符合常理，所以把事件添加到队列。
+
+2. UIApplication会从事件队列中取出最前面的事件，并将事件分发下去以便处理，通常，先发送事件给应用程序的主窗口（keyWindow）
+
+应用如何找到最合适的控件来处理事件？
+
+1. 首先判断主窗口（keyWindow）自己是否能接受触摸事件,不能,则传给UIApplication处理.,能,转2
+
+2. 判断触摸点是否在自己身上
+
+3. 子控件数组中从后往前遍历子控件，重复前面的两个步骤（所谓从后往前遍历子控件，就是首先查找子控件数组中最后一个元素，然后执行1、2步骤）
+
+4. 如果没有符合条件的子控件，那么就认为自己最合适处理这个事件，也就是自己是最合适的view。
 
 
 
@@ -220,6 +232,16 @@ All perform requests are canceled that have the same target as aTarget, argument
 
 
 
+
+
+
+
+
+
+
+
+
+dd
 
 
 
