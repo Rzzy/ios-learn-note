@@ -293,7 +293,6 @@ for (User *user in userArray) {
 }
 // name=Jack, icon=lufy.png
 // name=Rose, icon=nami.png
-
 ```
 
 
