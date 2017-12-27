@@ -332,8 +332,11 @@ NSLog(@"%@", statusDict);
     user2.icon = @"nami.png";
     NSArray *userArray = @[user1, user2];
     //模型数组转字典数组，使用的是mj_keyValuesArrayWithObjectArray:方法
+    
     NSArray *dictArray = [User mj_keyValuesArrayWithObjectArray:userArray];
+    
     NSLog(@"%@", dictArray);
+    
     /*
      (
          {
