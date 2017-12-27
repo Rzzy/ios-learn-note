@@ -368,7 +368,6 @@ touchedEnded…
         若返回YES,则向当前视图的所有子视图(subviews)发送hitTest:withEvent:消息，所有
         子视图的遍历顺序是从top到bottom，即从subviews数组的末尾向前遍历,直到有子视图返
         回非空对象或者全部子视图遍历完毕。
- 
     2、若第一次有子视图返回非空对象,则hitTest:withEvent:方法返回此对象，处理结束。
     3、如所有子视图都返回nil,则hitTest:withEvent:方法返回自身(self)。
 ```
