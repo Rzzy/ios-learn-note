@@ -238,8 +238,8 @@ UIView默认不支持多点触控。也就是说不支持多只手指同时触�
 
 NSObject类的cancelPreviousPerformRequestWithTarget:selector:object方法取消指定对象的方法调用。
 
-> Cancels perform requests previously registered with performSelector:withObject:afterDelay:.   
-> All perform requests are canceled that have the same target as aTarget, argument as anArgument, and selector as aSelector.   
+> Cancels perform requests previously registered with performSelector:withObject:afterDelay:.  
+> All perform requests are canceled that have the same target as aTarget, argument as anArgument, and selector as aSelector.  
 > \(如果是带参数，那取消时的参数也要一致，否则不能取消成功\)
 
 _**细节**_  
@@ -361,6 +361,7 @@ touchedEnded…
      * 验证这个方法是否真能找到最合适的view？
      * 如果点击屏幕任何一个地方，都由控制器的view来处理事件，怎么做? 直接返回白色的view,就不会继续去找白色view的子控件了。
 ```
+
 ```object-c
 2> hitTest:withEvent:方法的处理流程如下:
     1、调用当前视图的pointInside:withEvent:方法判断触摸点是否在当前视图内
