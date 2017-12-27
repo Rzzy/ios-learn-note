@@ -2,7 +2,7 @@
 
 转载：https://www.jianshu.com/p/475b28160c89
 
-1、核心代码 `mj_objectWithKeyValues`:
+**1、核心代码 `mj_objectWithKeyValues`:**
 ```object-c
 typedef enum {
     SexMale,
@@ -33,4 +33,58 @@ typedef enum {
   //2016-07-04 11:06:59.746 PPDemos[2432:73824] MJ---Jack----lufy.png---20---1.55---100.9---1----1
 
 ```
+
+**2、JSON字符串 --> 模型**
+核心代码：` mj_objectWithKeyValues`:
+```object-c
+// 定义一个JSON字符串
+    NSString *jsonStr = @"{\"name\":\"Jack\", \"icon\":\"lufy.png\", \"age\":20}";
+    User *user = [User mj_objectWithKeyValues:jsonStr];
+    NSLog(@"MJ---%@----%@---%u",user.name,user.icon,user.age);
+    //打印结果
+    //2016-07-04 11:16:04.655 PPDemos[2563:78561] MJ---Jack----lufy.png---20
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
