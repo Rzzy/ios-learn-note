@@ -218,12 +218,9 @@ All perform requests are canceled that have the same target as aTarget, argument
 
 #####*应用如何找到最合适的控件来处理事件*？
 
-1. 首先判断主窗口（keyWindow）自己是否能接受触摸事件,不能,则传给UIApplication处理.,能,转2
-
+> 1. 首先判断主窗口（keyWindow）自己是否能接受触摸事件,不能,则传给UIApplication处理.,能,转2
 2. 判断触摸点是否在自己身上
-
 3. 子控件数组中从后往前遍历子控件，重复前面的两个步骤（所谓从后往前遍历子控件，就是首先查找子控件数组中最后一个元素，然后执行1、2步骤）
-
 4. 如果没有符合条件的子控件，那么就认为自己最合适处理这个事件，也就是自己是最合适的view。
 
 
