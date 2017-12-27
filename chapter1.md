@@ -139,7 +139,7 @@ NSDictionry dict_m8a = @{
                 @"icon" : @"lufy.png"
             }
         }
-],
+    ],
 @"ads" : @[
 @{
 @"image" : @"ad01.png",
