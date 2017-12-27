@@ -97,7 +97,7 @@ typedef enum {
 @interface Ad : NSObject
     @property (copy, nonatomic) NSString *image;
     @property (copy, nonatomic) NSString *url;
-    @end
+@end
 ```
 
 
