@@ -101,7 +101,14 @@ UIView是UIResponder的子类，可以实现下列4个方法处理不同的触�
 + UIEvent：称为事件对象，记录事件产生的时刻和类型
 
 **常见属性**
+```object-c
+// 事件类型
+@property(nonatomic,readonly)UIEventType     type;
+@property(nonatomic,readonly)UIEventSubtype  subtype;
 
+// 事件产生的时间
+@property(nonatomic,readonly)NSTimeInterval  timestamp;
+```
 
 
 
