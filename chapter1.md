@@ -206,8 +206,47 @@ import <Foundation/Foundation.h>
     @property (strong, nonatomic) Bag *bag;
 @end
 ```
+```object-c
+@implementation Student
++(NSDictionary *)mj_replacedKeyFromPropertyName
+{
+// 实现这个方法的目的：告诉MJExtension框架模型中的属性名对应着字典的哪个key
+    return @{
+        @"ID" : @"id",
+        @"desc" : @"desciption",
+        @"oldName" : @"name.oldName",
+        @"nowName" : @"name.newName",
+        @"nameChangedTime" : @"name.info[1].nameChangedTime",
+        @"bag" : @"other.bag"
+    };
+}
+@end
+```
+```object-c
+NSDictionry *dict_nokey = @{
+    @"id" : @"20",
+    @"desciption" : @"kids",
+    @"name" : @{
+        @"newName" : @"lufy",
+        @"oldName" : @"kitty",
+        @"info" : 
+            @[
+                @"test-data",
+                @{
+                    @"nameChangedTime" : @"2013-08"
+                }
+            ]
+        },
+    @"other" : @{
+        @"bag" : 
+            @{
+                @"name" : @"a red bag",
+                @"price" : @100.7
+            }
+    }
+};
 
-
+```
 
 
 
