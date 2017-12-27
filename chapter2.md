@@ -217,7 +217,6 @@ All perform requests are canceled that have the same target as aTarget, argument
 + **UIApplication会从事件队列中取出最前面的事件，并将事件分发下去以便处理，通常，先发送事件给应用程序的主窗口（keyWindow）**
 
 #####*应用如何找到最合适的控件来处理事件*？
-
 > 1. 首先判断主窗口（keyWindow）自己是否能接受触摸事件,不能,则传给UIApplication处理.,能,转2
 2. 判断触摸点是否在自己身上
 3. 子控件数组中从后往前遍历子控件，重复前面的两个步骤（所谓从后往前遍历子控件，就是首先查找子控件数组中最后一个元素，然后执行1、2步骤）
@@ -226,18 +225,31 @@ All perform requests are canceled that have the same target as aTarget, argument
 + **主窗口会在视图层次结构中找到一个最合适的视图来处理触摸事件，但是这仅仅是整个事件处理过程的第一步**
 + **找到合适的视图控件后，就会调用视图控件的touches方法来作具体的事件处理**
 
+>touchesBegan…
+touchesMoved…
+touchedEnded…
+注意: 如果父控件不能接受触摸事件，那么子控件就不可能接收到触摸事件
 
 
+####`UIView`不接收触摸事件的三种情况
+1.不接收用户交互
+```object-c
+userInteractionEnabled = NO
+```
 
+2.隐藏
+```object-c
+hidden = YES
+```
+3.透明
+```object-c
+alpha = 0.0 ~ 0.01
+```
+>提示：UIImageView的userInteractionEnabled默认就是NO，因此UIImageView以及它的子控件默认是不能接收触摸事件的
 
+#####**事件传递示例**
+![事件传递示例](/assets/1932148-7e8ce35dc4d4b2ba.png)
 
-
-
-
-
-
-
-dd
 
 
 
