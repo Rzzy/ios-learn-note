@@ -270,6 +270,42 @@ NSLog(@"bagName=%@, bagPrice=%f", stu.bag.name, stu.bag.price);
 //2016-07-04 14:20:28.082 PPDemos[3602:126004] bagName=a red bag, bagPrice=100.700000
 ```
 
+**6.将一个字典数组转成模型数组**
+
+核心代码`mj_objectArrayWithKeyValuesArray`:
+
+```object-c
+NSArray *dictArray = @[
+    @{
+        @"name" : @"Jack",
+        @"icon" : @"lufy.png"
+    },
+    @{
+        @"name" : @"Rose",
+        @"icon" : @"nami.png"
+    }
+];
+//字典数组转模型数组，使用的是mj_objectArrayWithKeyValuesArray:方法
+NSArray *userArray = [User mj_objectArrayWithKeyValuesArray:dictArray];
+//打印
+for (User *user in userArray) {
+    NSLog(@"name=%@, icon=%@", user.name, user.icon);
+}
+// name=Jack, icon=lufy.png
+// name=Rose, icon=nami.png
+
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
