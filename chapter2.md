@@ -58,7 +58,6 @@ UIView是UIResponder的子类，可以实现下列4个方法处理不同的触�
 + 当用户用一根手指触摸屏幕时，会创建一个与手指相关联的UITouch对象
 + 一根手指对应一个UITouch对象
 
-
 ***UITouch的作用***
 
 1. 保存着跟手指相关的信息，比如触摸的位置、时间、阶段
@@ -96,10 +95,12 @@ UIView是UIResponder的子类，可以实现下列4个方法处理不同的触�
 
 -(CGPoint)previousLocationInView:(UIView *)view;
 // 该方法记录了前一个触摸点的位置
-
 ```
+###`UIEvent`
++ 每产生一个事件，就会产生一个UIEvent对象
++ UIEvent：称为事件对象，记录事件产生的时刻和类型
 
-
+**常见属性**
 
 
 
