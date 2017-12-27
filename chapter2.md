@@ -69,7 +69,23 @@ UIView是UIResponder的子类，可以实现下列4个方法处理不同的触�
 
 > 提示：iPhone开发中，要避免使用双击事件！'
 
+***UITouch的属性***
+```object-c
+// 触摸产生时所处的窗口
+@property(nonatomic,readonly,retain)UIWindow *window;
 
+// 触摸产生时所处的视图
+@property(nonatomic,readonly,retain)UIView *view;
+
+// 短时间内点按屏幕的次数，可以根据tapCount判断单击、双击或更多的点击
+@property(nonatomic,readonly)NSUInteger tapCount;
+
+// 记录了触摸事件产生或变化时的时间，单位是秒
+@property(nonatomic,readonly)NSTimeInterval timestamp;
+
+// 当前触摸事件所处的状态
+@property(nonatomic,readonly)UITouchPhase phase;
+```
 
 
 
