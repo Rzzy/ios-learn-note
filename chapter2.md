@@ -55,8 +55,7 @@ UIView是UIResponder的子类，可以实现下列4个方法处理不同的触�
 >提示：touches中存放的都是UITouch对象
 
 ###`UITouch`
-当用户用一根手指触摸屏幕时，会创建一个与手指相关联的UITouch对象
-
++ 当用户用一根手指触摸屏幕时，会创建一个与手指相关联的UITouch对象
 + 一根手指对应一个UITouch对象
 
 ***UITouch的作用***
