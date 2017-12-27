@@ -93,7 +93,12 @@ typedef enum {
 **4、模型中有个数组属性，数组里面又要装着其它模型**
 核心代码 `mj_objectWithKeyValues`和`mj_objectClassInArray`:
 
-
+```object-c
+@interface Ad : NSObject
+    @property (copy, nonatomic) NSString *image;
+    @property (copy, nonatomic) NSString *url;
+    @end
+```
 
 
 
