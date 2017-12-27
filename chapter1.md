@@ -73,6 +73,8 @@ typedef enum {
 @property (strong, nonatomic) Status *retweetedStatus;/* 自我模型类型 */
 @end
 //
+```
+```object-c
 //字典转模型，模型里面含有模型
     Status *status = [Status mj_objectWithKeyValues:dict_m8m];
     NSString *text = status.text;
