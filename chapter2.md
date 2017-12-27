@@ -194,14 +194,22 @@ UIView默认不支持多点触控。也就是说不支持多只手指同时触�
     //...  
 }
 ```
+唯一需要注意的是:
+`[singleTapGesture requireGestureRecognizerToFail:doubleTapGesture]`;  
+这句话的意思时，只有当doubleTapGesture识别失败的时候(即识别出这不是双击操作)，singleTapGesture才能开始识别，同我们一开始讲的是同一个问题。
 
+>提示：iPhone开发中，要避免使用双击事件!
 
+NSObject类的cancelPreviousPerformRequestWithTarget:selector:object方法取消指定对象的方法调用。
 
+>Cancels perform requests previously registered with performSelector:withObject:afterDelay:. 
+All perform requests are canceled that have the same target as aTarget, argument as anArgument, and selector as aSelector. 
+(如果是带参数，那取消时的参数也要一致，否则不能取消成功)
 
+***细节***
+检测tapCount可以放在touchesBegan也可以touchesEnded，不过一般后者更准确，因为touchesEnded可以保证所有的手指都已经离开屏幕，这样就不会把轻击动作和按下拖动等动作混淆。
 
-
-
-
+**不管是一个手指还是多个手指，轻击操作都会使每个触摸对象的tapCount加1，因此可以直接调用touches的anyObject方法来获取任意一个触摸对象然后判断其tapCount的值即可。*
 
 
 
