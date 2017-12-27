@@ -163,16 +163,16 @@ NSDictionry dict_m8a = @{
     };
 }];
 // Equals: StatusResult.m implements + mj_objectClassInArray method.
-*/
+
 //以上方法在VC里写，如果多个地方解析该model，就要写多次，最好在model的.m文件写！
 //字典转模型，支持模型的数组属性里面又装着模型
 StatusResult *result = [StatusResult mj_objectWithKeyValues:dict_m8a];
 //打印博主信息
 for (Status *status in result.statuses) {
-NSString *text = status.text;
-NSString *name = status.user.name;
-NSString *icon = status.user.icon;
-NSLog(@"mj---text=%@, name=%@, icon=%@", text, name, icon);
+    NSString *text = status.text;
+    NSString *name = status.user.name;
+    NSString *icon = status.user.icon;
+    NSLog(@"mj---text=%@, name=%@, icon=%@", text, name, icon);
 }
 //打印广告
 for (Ad *ad in result.ads) {
