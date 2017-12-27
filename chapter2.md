@@ -1,6 +1,5 @@
-####史上最详细的iOS之事件的传递和响应机制-原理篇
-
-转载：https://www.jianshu.com/p/2e074db792ba
+####iOS中事件的产生和传递
+转载：https://www.jianshu.com/p/585760924a92
 
 **iOS中的事件可以分为3大类型**：
 > 按照时间顺序，事件的生命周期是这样的：
@@ -14,7 +13,8 @@
 
 ###`UIResponder`
 UIResponder内部提供了以下方法来处理事件
-触摸事件:
+
+`触摸事件`:
 ```object-c
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;
 
@@ -23,4 +23,12 @@ UIResponder内部提供了以下方法来处理事件
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
+```
+`加速计事件`
+```oobject-c
+-(void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event;
+
+-(void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event;
+
+-(void)motionCancelled:(UIEventSubtype)motion withEvent:(UIEvent *)event;
 ```
