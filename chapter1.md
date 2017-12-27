@@ -1,4 +1,7 @@
 ##### 简单的字典 --> 模型
+
+转载：https://www.jianshu.com/p/475b28160c89
+
 核心代码 `mj_objectWithKeyValues`:
 ```object-c
 typedef enum {
