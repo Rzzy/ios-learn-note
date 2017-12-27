@@ -211,7 +211,8 @@ All perform requests are canceled that have the same target as aTarget, argument
 
 **不管是一个手指还是多个手指，轻击操作都会使每个触摸对象的tapCount加1，因此可以直接调用touches的anyObject方法来获取任意一个触摸对象然后判断其tapCount的值即可。*
 
-
+####事件的产生和传递
+发生触摸事件后，系统会将该事件加入到一个由UIApplication管理的事件队列中, 为什么是队列而不是栈？因为队列的特定是先进先出，先产生的事件先处理才符合常理，所以把事件添加到队列。
 
 
 
