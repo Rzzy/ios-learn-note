@@ -357,9 +357,20 @@ touchedEnded…
     3> 遍历自己的子控件，寻找有没有比自己更合适的view
     4> 如果子控件不接收事件，意味着子控件没有找到最合适的view,然后返回nil,告诉窗口没有找到更合适的view,窗口就知道没有比自己更合适的view,就自己处理事件。
 
- * 验证下hitTest方法返回nil，里面的子控件能处理事件吗？ 重写view的hitTest:withEvent:方法，
+     * 验证下hitTest方法返回nil，里面的子控件能处理事件吗？ 重写view的hitTest:withEvent:方法，
      * 验证这个方法是否真能找到最合适的view？
      * 如果点击屏幕任何一个地方，都由控制器的view来处理事件，怎么做? 直接返回白色的view,就不会继续去找白色view的子控件了。
+```
+```object-c
+2> hitTest:withEvent:方法的处理流程如下:
+    1、调用当前视图的pointInside:withEvent:方法判断触摸点是否在当前视图内
+        若返回NO,则hitTest:withEvent:返回nil;
+        若返回YES,则向当前视图的所有子视图(subviews)发送hitTest:withEvent:消息，所有
+        子视图的遍历顺序是从top到bottom，即从subviews数组的末尾向前遍历,直到有子视图返
+        回非空对象或者全部子视图遍历完毕。
+ 
+    2、若第一次有子视图返回非空对象,则hitTest:withEvent:方法返回此对象，处理结束。
+    3、如所有子视图都返回nil,则hitTest:withEvent:方法返回自身(self)。
 ```
 
 
