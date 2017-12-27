@@ -321,6 +321,7 @@ NSLog(@"%@", statusDict);
 
 **8、将一个模型数组转成字典数组**
 核心代码` mj_keyValuesArrayWithObjectArray`：
+
 ```object-c
 //创建模型数组
     User *user1 = [[User alloc] init];
