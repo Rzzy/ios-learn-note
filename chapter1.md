@@ -176,21 +176,34 @@ for (Status *status in result.statuses) {
 }
 //打印广告
 for (Ad *ad in result.ads) {
-NSLog(@"mj---image=%@, url=%@", ad.image, ad.url);
+    NSLog(@"mj---image=%@, url=%@", ad.image, ad.url);
 }
 //打印结果
 //2016-07-04 13:47:58.994 PPDemos[3353:113055] mj---text=Nice weather!, name=Rose, icon=nami.png
 //2016-07-04 13:47:58.995 PPDemos[3353:113055] mj---text=Go camping tomorrow!, name=Jack, icon=lufy.png
 //2016-07-04 13:47:58.995 PPDemos[3353:113055] mj---image=ad01.png, url=http://www.ad01.com
 //2016-07-04 13:47:58.995 PPDemos[3353:113055] mj---image=ad02.png, url=http://www.ad02.com
+```
+**5、模型中的属性名和字典中的key不相同(或者需要多级映射)**
+核心代码： `mj_objectWithKeyValues:`和`mj_replacedKeyFromPropertyName`：
 
-----
-> ###5.模型中的属性名和字典中的key不相同(或者需要多级映射)
-- **核心代码** `mj_objectWithKeyValues:`和`mj_replacedKeyFromPropertyName`
->//多级映射，用点语法设置
+- 多级映射，用点语法设置
+```object-c
 @interface Bag : NSObject
-@property (copy, nonatomic) NSString *name;
-@property (assign, nonatomic) double price;
+    @property (copy, nonatomic) NSString *name;
+    @property (assign, nonatomic) double price;
+@end
+```
+```object-c
+import <Foundation/Foundation.h>
+@class Bag;
+    @interface Student : NSObject
+    @property (copy, nonatomic) NSString *ID;
+    @property (copy, nonatomic) NSString *desc;
+    @property (copy, nonatomic) NSString *nowName;
+    @property (copy, nonatomic) NSString *oldName;
+    @property (copy, nonatomic) NSString *nameChangedTime;
+    @property (strong, nonatomic) Bag *bag;
 @end
 ```
 
