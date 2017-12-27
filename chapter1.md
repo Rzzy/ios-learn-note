@@ -246,7 +246,29 @@ NSDictionry *dict_nokey = @{
     }
 };
 ```
-
+```object-c
+//
+// // How to map
+// [Student mj_setupReplacedKeyFromPropertyName:^NSDictionary *{
+    // return @{
+    // @"ID" : @"id",
+    // @"desc" : @"desciption",
+    // @"oldName" : @"name.oldName",
+    // @"nowName" : @"name.newName",
+    // @"nameChangedTime" : @"name.info[1].nameChangedTime",
+    // @"bag" : @"other.bag"
+    // };
+// }];
+// // Equals: Student.m implements +mj_replacedKeyFromPropertyName method.
+//字典转模型，支持多级映射
+Student *stu = [Student mj_objectWithKeyValues:dict_nokey];
+//打印
+NSLog(@"ID=%@, desc=%@, oldName=%@, nowName=%@, nameChangedTime=%@",
+stu.ID, stu.desc, stu.oldName, stu.nowName, stu.nameChangedTime);
+NSLog(@"bagName=%@, bagPrice=%f", stu.bag.name, stu.bag.price);
+//2016-07-04 14:20:28.082 PPDemos[3602:126004] ID=20, desc=kids, oldName=kitty, nowName=lufy, nameChangedTime=2013-08
+//2016-07-04 14:20:28.082 PPDemos[3602:126004] bagName=a red bag, bagPrice=100.700000
+```
 
 
 
