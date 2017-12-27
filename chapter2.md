@@ -32,3 +32,51 @@ UIResponder内部提供了以下方法来处理事件
 
 -(void)motionCancelled:(UIEventSubtype)motion withEvent:(UIEvent *)event;
 ```
+`远程控制事件`
+```oobject-c
+-(void)remoteControlReceivedWithEvent:(UIEvent *)event;
+```
+###`UIView`的触摸事件处理
+UIView是UIResponder的子类，可以实现下列4个方法处理不同的触摸事件
+```object-c
+Ø一根或者多根手指开始触摸view，系统会自动调用view的下面方法
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+
+Ø一根或者多根手指在view上移动，系统会自动调用view的下面方法（随着手指的移动，会持续调用该方法）
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+
+Ø一根或者多根手指离开view，系统会自动调用view的下面方法
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent  *)event
+
+
+Ø触摸结束前，某个系统事件(例如电话呼入)会打断触摸过程，系统会自动调用view的下面方法
+-(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+```
+>提示：touches中存放的都是UITouch对象
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
