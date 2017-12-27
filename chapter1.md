@@ -295,6 +295,8 @@ for (User *user in userArray) {
 // name=Rose, icon=nami.png
 ```
 
+**7、 将一个模型转成字典**
+
 
 
 
