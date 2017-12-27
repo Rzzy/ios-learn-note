@@ -68,6 +68,7 @@ UIView是UIResponder的子类，可以实现下列4个方法处理不同的触�
 
 > 提示：iPhone开发中，要避免使用双击事件！'
 
+
 ***UITouch的属性***
 ```object-c
 // 触摸产生时所处的窗口
