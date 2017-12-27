@@ -85,6 +85,17 @@ UIView是UIResponder的子类，可以实现下列4个方法处理不同的触�
 // 当前触摸事件所处的状态
 @property(nonatomic,readonly)UITouchPhase phase;
 ```
+***UITouch的方法***
+```object-c
+-(CGPoint)locationInView:(UIView *)view;
+// 返回值表示触摸在view上的位置
+// 这里返回的位置是针对view的坐标系的（以view的左上角为原点(0, 0)）
+// 调用时传入的view参数为nil的话，返回的是触摸点在UIWindow的位置
+
+-(CGPoint)previousLocationInView:(UIView *)view;
+// 该方法记录了前一个触摸点的位置
+
+```
 
 
 
