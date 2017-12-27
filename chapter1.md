@@ -197,7 +197,7 @@ for (Ad *ad in result.ads) {
 ```object-c
 import <Foundation/Foundation.h>
 @class Bag;
-    @interface Student : NSObject
+@interface Student : NSObject
     @property (copy, nonatomic) NSString *ID;
     @property (copy, nonatomic) NSString *desc;
     @property (copy, nonatomic) NSString *nowName;
