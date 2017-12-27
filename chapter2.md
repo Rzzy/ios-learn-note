@@ -216,7 +216,7 @@ All perform requests are canceled that have the same target as aTarget, argument
 
 2. UIApplication会从事件队列中取出最前面的事件，并将事件分发下去以便处理，通常，先发送事件给应用程序的主窗口（keyWindow）
 
-应用如何找到最合适的控件来处理事件？
+#####应用如何找到最合适的控件来处理事件？
 
 1. 首先判断主窗口（keyWindow）自己是否能接受触摸事件,不能,则传给UIApplication处理.,能,转2
 
