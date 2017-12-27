@@ -91,6 +91,8 @@ typedef enum {
     //2016-07-04 11:45:39.675 PPDemos[2781:87089] mj-----text2=Nice weather!, name2=Rose, icon2=nami.png
 ```
 **4、模型中有个数组属性，数组里面又要装着其它模型**
+核心代码 `mj_objectWithKeyValues`和`mj_objectClassInArray`:
+
 
 
 
