@@ -123,35 +123,36 @@ typedef enum {
 @end
 #####在VC里实现以下来解析数据
 NSDictionry dict_m8a = @{
-@"statuses" : 
-    @[
-        @{
-            @"text" : @"Nice weather!",
-            @"user" : @{
-                @"name" : @"Rose",
-                @"icon" : @"nami.png"
+    @"statuses" : 
+        @[
+            @{
+                @"text" : @"Nice weather!",
+                @"user" : @{
+                    @"name" : @"Rose",
+                    @"icon" : @"nami.png"
+                }
+            },
+            @{
+                @"text" : @"Go camping tomorrow!",
+                @"user" : @{
+                    @"name" : @"Jack",
+                    @"icon" : @"lufy.png"
+                }
             }
-        },
-        @{
-            @"text" : @"Go camping tomorrow!",
-            @"user" : @{
-                @"name" : @"Jack",
-                @"icon" : @"lufy.png"
+        ],
+    @"ads": 
+        @[
+            @{
+                @"image" : @"ad01.png",
+                @"url" : @"http://www.ad01.com"
+            },
+            @{
+                @"image" : @"ad02.png",
+                @"url" : @"http://www.ad02.com"
             }
-        }
-    ],
-@"ads" : @[
-@{
-@"image" : @"ad01.png",
-@"url" : @"http://www.ad01.com"
-},
-@{
-@"image" : @"ad02.png",
-@"url" : @"http://www.ad02.com"
-}
-],
-@"totalNumber" : @"2014"
-};
+        ],
+        @"totalNumber" : @"2014"
+    };
 【重点，核心】》》数组中存储模型数据，需要说明数组中存储的模型数据类型 《《
 /
 [StatusResult mj_setupObjectClassInArray:^NSDictionary *{
