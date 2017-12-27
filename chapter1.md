@@ -45,7 +45,23 @@ typedef enum {
 ```
  **3、复杂的字典 --> 模型 (模型里面包含了模型)**
 核心代码 `mj_objectWithKeyValues`:
-
+```object-c
+//复杂的字典[模型中有个数组属性，数组里面又要装着其他模型的字典]
+    NSDictionary *dict_m8m = @{
+                  @"text" : @"Agree!Nice weather!",
+                  @"user" : @{
+                          @"name" : @"Jack",
+                          @"icon" : @"lufy.png"
+                          },
+                  @"retweetedStatus" : @{
+                          @"text" : @"Nice weather!",
+                          @"user" : @{
+                                  @"name" : @"Rose",
+                                  @"icon" : @"nami.png"
+                                  }
+                          }
+                  };
+```
 
 
 
