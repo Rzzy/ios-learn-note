@@ -162,7 +162,7 @@ NSDictionry dict_m8a = @{
         // @"ads" : [Ad class]
     };
 }];
-// Equals: StatusResult.m implements +mj_objectClassInArray method.
+// Equals: StatusResult.m implements + mj_objectClassInArray method.
 */
 //以上方法在VC里写，如果多个地方解析该model，就要写多次，最好在model的.m文件写！
 //字典转模型，支持模型的数组属性里面又装着模型
