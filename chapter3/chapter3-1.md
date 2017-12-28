@@ -1,7 +1,5 @@
 UI基础控件之UIView详解
 
-转载：[https://www.jianshu.com/p/1f28240babd0](https://www.jianshu.com/p/1f28240babd0)
-
 #### `UIView` 简介
 
 **什么是**`UIView`  
