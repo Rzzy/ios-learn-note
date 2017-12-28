@@ -45,3 +45,34 @@ UIView *view = [[UIView alloc] initWithFrame:CGRectMake(100, 100, 200, 200)];
     //中心点
     view.center = self.window.center;
 ```
+>注意：这里特别说下frame， 他是UIView一个非常重要的属性，决定了UIView的大小和位置；frame中设置的位置是以UIView的父视图坐标系为基准，需要特别注意的是不可以修改frame中的某个成员变量，只能整体修改frame
+
+#####子视图管理
+#####NSArray *subviews
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
