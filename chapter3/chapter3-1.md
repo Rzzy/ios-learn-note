@@ -47,25 +47,63 @@ UIView *view = [[UIView alloc] initWithFrame:CGRectMake(100, 100, 200, 200)];
 ```
 >注意：这里特别说下frame， 他是UIView一个非常重要的属性，决定了UIView的大小和位置；frame中设置的位置是以UIView的父视图坐标系为基准，需要特别注意的是不可以修改frame中的某个成员变量，只能整体修改frame
 
-##### 子视图管理
+#### 子视图管理
 #####NSArray *subviews
++ 管理所有的子视图(控件)
++ 数组元素的顺序决定着子控件的显示层级顺序（下标越大的，越显示在上面）
++ 所有子视图的管理都是对subviews数组的管理
 
+#####添加视图
+```object-c
+UIView *view2 = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
 
+view2.backgroundColor = [UIColor greenColor];
+view2.tag = 200;
 
+//将view2添加到view上
+[view addSubview:view2];
+```
+通过上述代码添加后，view2是view的子视图，view是view2的父视图;
+所有视图之间有层次级别关系，越是在后添加的视图，越显示在上面，前面添加的在下面
 
+#####插入视图
 
+```object-c
+//将一个yView插入到view的子视图中，序号为0的位置
+//序号越小越靠近下面，序号越大越靠近上面
+//序号的范围[0,子视图的个数)
+[view insertSubview:yView atIndex:0];
 
+//将oView插入到view的子视图中view2的下面
+[view insertSubview:oView belowSubview:view2];
 
+//将人View插入到view的子视图中， yView的上面
+[view insertSubview:rView aboveSubview:yView]
+```
+#####删除视图
+`UIView`中子视图管理和数组对元素的管理不一样，他不能通过父视图去删除子视图，只能子视图自己将自己从父视图中删除.
 
+```object-c
+//view2将自己从父视图中移除
+[view2 removeFromSuperview];
+```
+#####获取视图
 
+视图没有名字，但他有标识，所以要想获取视图中的指定子视图，我们可以通过子视图的标识来获取,方法如下：
 
+```object-c
+//获取view下子视图标识为200的视图
+UIView *subView = [view viewWithTag:200];
 
+```
+#####更改视图的显示层级
+```object-c
+//通过父视图，将某个子视图在最上面显示
+[view bringSubviewToFront:yView];
 
-
-
-
-
-
+//通过父视图， 将某个子视图在最下显示
+[view sendSubviewToBack:view2];
+```
 
 
 
