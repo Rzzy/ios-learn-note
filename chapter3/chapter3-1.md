@@ -15,7 +15,7 @@ UI基础控件之UIView详解
 
 ####`UIView`创建与使用
 
-#####创建UIView
+#####创建`UIView`
 ```object-c
 //通过frame创建View
 UIView *view = [[UIView alloc] initWithFrame:CGRectMake(100, 100, 200, 200)];
@@ -25,7 +25,7 @@ UIView *view = [[UIView alloc] initWithFrame:CGRectMake(100, 100, 200, 200)];
 ```
 视图是一块区域，所以创建UIView的同时需要设置他的位置和大小，frame是一个包含位置和大小的结构体；
 
-***`UIView`的基本属性***
+#####`UIView`的基本属性
 ```object-c
     //设置视图的背景颜色
     view.backgroundColor = [UIColor redColor];
