@@ -29,7 +29,7 @@ UITableView使用时常遇到的问题大致如下：
 
 // This category provides convenience methods to make it easier to use an NSIndexPath to represent a section and row
 @interface NSIndexPath (UITableView)
-+ (instancetype)indexPathForRow:(NSInteger)row inSection:(NSInteger)section;
+    +(instancetype)indexPathForRow:(NSInteger)row inSection:(NSInteger)section;
     @property (nonatomic, readonly) NSInteger section;
     @property (nonatomic, readonly) NSInteger row;
 @end
