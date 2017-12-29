@@ -22,3 +22,15 @@ UITableView使用时常遇到的问题大致如下：
     + 默认选中某个Cell
 
 ####`NSIndexPath`
+提到UITableView，就必须的说一说NSIndexPath。UITableView声明了一个NSIndexPath的类别，主要用来标识当前cell的在tableView中的位置，该类别有section和row两个属性，前者标识当前cell处于第几个section中，后者代表在该section中的第几行。
+
+```object-c
+// 源码来源于UIKit->UITableView.h
+
+// This category provides convenience methods to make it easier to use an NSIndexPath to represent a section and row
+@interface NSIndexPath (UITableView)
++ (instancetype)indexPathForRow:(NSInteger)row inSection:(NSInteger)section;
+    @property (nonatomic, readonly) NSInteger section;
+    @property (nonatomic, readonly) NSInteger row;
+@end
+```
