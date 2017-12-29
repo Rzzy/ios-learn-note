@@ -110,4 +110,174 @@ typedef NS_ENUM(NSInteger, UITableViewCellEditingStyle) {
   UITableViewCellEditingStyleInsert // “+”号效果
 };
 ```
+#### 其它枚举
+
+```object-c
+// 源码来源于UIKit->UITableView.h
+
+typedef NS_ENUM(NSInteger, UITableViewStyle) {
+    UITableViewStylePlain,          // regular table view
+    UITableViewStyleGrouped         // preferences style table view
+};
+
+typedef NS_ENUM(NSInteger, UITableViewScrollPosition) {
+    UITableViewScrollPositionNone,
+    UITableViewScrollPositionTop,    
+    UITableViewScrollPositionMiddle,   
+    UITableViewScrollPositionBottom
+};                // scroll so row of interest is completely visible at top/center/bottom of view
+
+typedef NS_ENUM(NSInteger, UITableViewRowAnimation) {
+    UITableViewRowAnimationFade,
+    UITableViewRowAnimationRight,           // slide in from right (or out to right)
+    UITableViewRowAnimationLeft,
+    UITableViewRowAnimationTop,
+    UITableViewRowAnimationBottom,
+    UITableViewRowAnimationNone,            // available in iOS 3.0
+    UITableViewRowAnimationMiddle,          // available in iOS 3.2.  attempts to keep cell centered in the space it will/did occupy
+    UITableViewRowAnimationAutomatic = 100  // available in iOS 5.0.  chooses an appropriate animation style for you
+};
+
+// Including this constant string in the array of strings returned by sectionIndexTitlesForTableView: will cause a magnifying glass icon to be displayed at that location in the index.
+// This should generally only be used as the first title in the index.
+UIKIT_EXTERN NSString *const UITableViewIndexSearch NS_AVAILABLE_IOS(3_0) __TVOS_PROHIBITED;
+
+// Returning this value from tableView:heightForHeaderInSection: or tableView:heightForFooterInSection: results in a height that fits the value returned from
+// tableView:titleForHeaderInSection: or tableView:titleForFooterInSection: if the title is not nil.
+UIKIT_EXTERN const CGFloat UITableViewAutomaticDimension NS_AVAILABLE_IOS(5_0);
+
+typedef NS_ENUM(NSInteger, UITableViewRowActionStyle) {
+    UITableViewRowActionStyleDefault = 0,
+    UITableViewRowActionStyleDestructive = UITableViewRowActionStyleDefault,
+    UITableViewRowActionStyleNormal
+} NS_ENUM_AVAILABLE_IOS(8_0) __TVOS_PROHIBITED;
+```
+
+#### DateSource——数据源
+主要为UITableView提供数据供UITableViewCell显示时调用。当指定UITableViewCell支持编辑操作(insert、delete、move、reordering等)时，需在操作时同时操作数据源（DataSource），否则将可能导致crash。
+
+```object-c
+Configuring a Table View
+- tableView:cellForRowAtIndexPath:
+ Required
+- numberOfSectionsInTableView:
+- tableView:numberOfRowsInSection:
+ Required
+- sectionIndexTitlesForTableView:
+- tableView:sectionForSectionIndexTitle:atIndex:
+- tableView:titleForHeaderInSection:
+- tableView:titleForFooterInSection:
+Inserting or Deleting Table Rows
+- tableView:commitEditingStyle:forRowAtIndexPath:
+- tableView:canEditRowAtIndexPath:
+Reordering Table Rows
+- tableView:canMoveRowAtIndexPath:
+- tableView:moveRowAtIndexPath:toIndexPath:
+
+```
+
+#### Delegate——代理
+主要提供一些可选的方法，用来控制UITableViewCell的选择、指定section的头和尾的显示以及协助完成cell的删除和排序等功能。
+
+```object-c
+Configuring Rows for the Table View
+- tableView:heightForRowAtIndexPath:
+- tableView:estimatedHeightForRowAtIndexPath:
+- tableView:indentationLevelForRowAtIndexPath:
+- tableView:willDisplayCell:forRowAtIndexPath:
+Managing Accessory Views
+- tableView:editActionsForRowAtIndexPath:
+- tableView:accessoryTypeForRowWithIndexPath:
+ (iOS 3.0)
+- tableView:accessoryButtonTappedForRowWithIndexPath:
+Managing Selections
+- tableView:willSelectRowAtIndexPath:
+- tableView:didSelectRowAtIndexPath:
+- tableView:willDeselectRowAtIndexPath:
+- tableView:didDeselectRowAtIndexPath:
+Modifying the Header and Footer of Sections
+- tableView:viewForHeaderInSection:
+- tableView:viewForFooterInSection:
+- tableView:heightForHeaderInSection:
+- tableView:estimatedHeightForHeaderInSection:
+- tableView:heightForFooterInSection:
+- tableView:estimatedHeightForFooterInSection:
+- tableView:willDisplayHeaderView:forSection:
+- tableView:willDisplayFooterView:forSection:
+Editing Table Rows
+- tableView:willBeginEditingRowAtIndexPath:
+- tableView:didEndEditingRowAtIndexPath:
+- tableView:editingStyleForRowAtIndexPath:
+- tableView:titleForDeleteConfirmationButtonForRowAtIndexPath:
+- tableView:shouldIndentWhileEditingRowAtIndexPath:
+Reordering Table Rows
+- tableView:targetIndexPathForMoveFromRowAtIndexPath:toProposedIndexPath:
+Tracking the Removal of Views
+- tableView:didEndDisplayingCell:forRowAtIndexPath:
+- tableView:didEndDisplayingHeaderView:forSection:
+- tableView:didEndDisplayingFooterView:forSection:
+Copying and Pasting Row Content
+- tableView:shouldShowMenuForRowAtIndexPath:
+- tableView:canPerformAction:forRowAtIndexPath:withSender:
+- tableView:performAction:forRowAtIndexPath:withSender:
+Managing Table View Highlighting
+- tableView:shouldHighlightRowAtIndexPath:
+- tableView:didHighlightRowAtIndexPath:
+- tableView:didUnhighlightRowAtIndexPath:
+Managing Table View Focus
+- tableView:canFocusRowAtIndexPath:
+- tableView:shouldUpdateFocusInContext:
+- tableView:didUpdateFocusInContext:withAnimationCoordinator:
+- indexPathForPreferredFocusedViewInTableView:
+
+UIKIT_EXTERN NSString *const UITableViewSelectionDidChangeNotification;
+```
+#### `UITableViewCell`
+`UITableViewCell`的所有`subView`都应该加载`contentView`上面，以免在编辑时出现UI错误。
+
+#### Edit
+通过从UITableViewCell中派生一个类，可以更深度的定制一个cell，可以指定cell在进入edit模式的时候如何相应等等。最简单的实现方式就是将所有要绘制的内容放到一个定制的subView中，并且重载该subView的drawRect方法直接把要显示的内容绘制出来(这样可以避免subView过多导致的性能瓶颈)，最后再将该subView添加到cell派生类中的contentView中即可。但是这样定制的cell需要注意在数据改变的时候，通过手动调用该subView的setNeedDisplay方法来刷新界面，这个例子可以在苹果的帮助文档中的TableViewSuite工程中找到，这儿就不举例了。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
