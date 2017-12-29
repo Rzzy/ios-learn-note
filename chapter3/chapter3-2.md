@@ -20,3 +20,5 @@ UITableView使用时常遇到的问题大致如下：
     + 分割线
     + Cell自定义
     + 默认选中某个Cell
+
+####`NSIndexPath`
