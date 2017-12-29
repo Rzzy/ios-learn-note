@@ -54,7 +54,9 @@ NS_CLASS_AVAILABLE_IOS(8_0) __TVOS_PROHIBITED
 @end
 
 #ifndef SDK_HIDE_TIDE
-NS_CLASS_AVAILABLE_IOS(9_0) @interface UITableViewFocusUpdateContext : UIFocusUpdateContext
+NS_CLASS_AVAILABLE_IOS(9_0) 
+
+@interface UITableViewFocusUpdateContext : UIFocusUpdateContext
 
 @property (nonatomic, strong, readonly, nullable) NSIndexPath *previouslyFocusedIndexPath;
 @property (nonatomic, strong, readonly, nullable) NSIndexPath *nextFocusedIndexPath;
