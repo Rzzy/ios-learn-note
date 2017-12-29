@@ -34,3 +34,51 @@ UITableView使用时常遇到的问题大致如下：
     @property (nonatomic, readonly) NSInteger row;
 @end
 ```
+####`UITableViewRowAction`
+```object-c
+// 源码来源于UIKit->UITableView.h
+
+NS_CLASS_AVAILABLE_IOS(8_0) __TVOS_PROHIBITED 
+
+@interface UITableViewRowAction : NSObject <NSCopying>
+
++ (instancetype)rowActionWithStyle:(UITableViewRowActionStyle)style title:(nullable NSString *)title handler:(void (^)(UITableViewRowAction *action, NSIndexPath *indexPath))handler;
+
+@property (nonatomic, readonly) UITableViewRowActionStyle style;
+@property (nonatomic, copy, nullable) NSString *title;
+@property (nonatomic, copy, nullable) UIColor *backgroundColor; // default background color is dependent on style
+@property (nonatomic, copy, nullable) UIVisualEffect* backgroundEffect;
+
+@end
+
+#ifndef SDK_HIDE_TIDE
+NS_CLASS_AVAILABLE_IOS(9_0) @interface UITableViewFocusUpdateContext : UIFocusUpdateContext
+
+@property (nonatomic, strong, readonly, nullable) NSIndexPath *previouslyFocusedIndexPath;
+@property (nonatomic, strong, readonly, nullable) NSIndexPath *nextFocusedIndexPath;
+
+@end
+#endif
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
