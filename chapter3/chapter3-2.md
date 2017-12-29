@@ -98,7 +98,16 @@ typedef NS_ENUM(NSInteger, UITableViewCellStyle) {
     UITableViewCellStyleSubtitle    // 左上方显示textLabel，左下方显示detailTextLabel（默认灰色）,imageView可选（显示在最左边）
 };
 ```
-`UITableViewCellStyle`索引对应下图由上往下的次序的效果。
+
+`UITableViewCellStyle`索引对应下图由上往下的次序的效果。  
 ![](/assets/QQ20151103-3@2x.png)
 
 **`UITableViewCellEditingStyle`**
+```object-c
+typedef NS_ENUM(NSInteger, UITableViewCellEditingStyle) {
+  UITableViewCellEditingStyleNone, // 无
+  UITableViewCellEditingStyleDelete, // “-”号效果
+  UITableViewCellEditingStyleInsert // “+”号效果
+};
+```
+
