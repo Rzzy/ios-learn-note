@@ -452,7 +452,7 @@ UIKIT_EXTERN NSString *const UITableViewSelectionDidChangeNotification;
 
 上面代码中首先拿到源`cell`所处的`section`，然后从该`section`对应的数据中移除，然后拿到目标`section`的数据，然后将源`cell`的数据添加到目标`section`中，并更新回数据模型，如果我们没有正确更新数据模型的话，显示的内容将会出现异常。
 
-#### UITableViewCell.h
+#### `UITableViewCell.h`
 
 ```object-c
 // 源码来源于UIKit->UITableViewCell.h
