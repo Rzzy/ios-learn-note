@@ -774,10 +774,12 @@ Cell的ReOrdering——移动
 ```
 
 #### 选择与编辑时的几个属性
-一般在做支付方式选择时，可以选择不可多选。即（allowsSelection = YES; self.tableView.allowsMultipleSelection = NO）,UITableView默认就是不可多选的。
 
-若是编辑某个列表页时，要求可以多选、删除操作时，需要设置self.tableView.allowsMultipleSelectionDuringEditing = YES。
+一般在做支付方式选择时，可以选择不可多选。即`（allowsSelection = YES; self.tableView.allowsMultipleSelection = NO）`,`UITableView`默认就是不可多选的。
 
+若是编辑某个列表页时，要求可以多选、删除操作时，需要设置`self.tableView.allowsMultipleSelectionDuringEditing = YES`。
+
+```object-c
 self.tableView.allowsSelection = YES; // 默认YES，当Cell在非编辑状态时，是否可以被选择
 self.tableView.allowsSelectionDuringEditing = YES; // 默认NO,当Cell在编辑状态时，是否可以被选择
 self.tableView.allowsMultipleSelection = YES; // 默认NO,当Cell在非编辑状态时，是否可以多选
@@ -787,11 +789,15 @@ self.tableView.allowsMultipleSelectionDuringEditing = YES; // 默认NO,当Cell�
 @property (nonatomic) BOOL allowsSelectionDuringEditing;                                 // default is NO. Controls whether rows can be selected when in editing mode
 @property (nonatomic) BOOL allowsMultipleSelection NS_AVAILABLE_IOS(5_0);                // default is NO. Controls whether multiple rows can be selected simultaneously
 @property (nonatomic) BOOL allowsMultipleSelectionDuringEditing NS_AVAILABLE_IOS(5_0);   // default is NO. Controls whether multiple rows can be selected simultaneously in editing mode
-多选
+```
 
-设置UITableView的allowsMultipleSelectionDuringEditing为YES即可在编辑时支持多选。
+#### 多选
+
+设置`UITableView`的`allowsMultipleSelectionDuringEditing`为`YES`即可在编辑时支持多选。
 
 批量操作 （插入、删除、更新）
+
+```object-c
 // 记得在操作时对数据源进行相应操作
 [self.tableView beginUpdates];
     
@@ -830,27 +836,36 @@ NSArray *indexPaths = [NSArray arrayWithObjects:[NSIndexPath indexPathForRow:0 i
 - (void)deleteRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation;
 - (void)reloadRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation NS_AVAILABLE_IOS(3_0);
 - (void)moveRowAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath NS_AVAILABLE_IOS(5_0);
-自定义HeaderVeiw、FooterView
+```
+自定义`HeaderVeiw`、`FooterView`
+
 实现如下代理方法即可：
 
+```object-c
 // Section header & footer information. Views are preferred over title should you decide to provide both
 
 - (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section;   // custom view for header. will be adjusted to default or specified header height
 - (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section;   // custom view for footer. will be adjusted to default or specified footer height
-估算Cell、HeaderVeiw、FooterView的高度
-UITableView在显示前需要知道每个Cell的高度，用以计算整个TableView的总高度，而后才开始渲染视图并显示在屏幕上。
+```
 
-若实现-tableView:estimatedHeightXXX 协议方法，TableView在计算总高度时将调用-tableView estimatedHeightForRowAtIndexPath:，先显示TableView，当滑动到某个Cell时，会调用-tableView:heightForRowAtIndexPath:获得Cell的真正高度。可以大大提供TableView第一加载时的效率。 
-若未实现，TableView在计算总高度时将调用-tableView:heightForRowAtIndexPath:获取高度。
+估算`Cell`、`HeaderVeiw`、`FooterView`的高度
+`UITableView`在显示前需要知道每个`Cell`的高度，用以计算整个`TableView`的总高度，而后才开始渲染视图并显示在屏幕上。
 
+若实现`-tableView:estimatedHeightXXX` 协议方法，`TableView`在计算总高度时将调用`-tableView estimatedHeightForRowAtIndexPath:`，先显示`TableView`，当滑动到某个`Cell`时，会调用`-tableView:heightForRowAtIndexPath:`获得`Cell`的真正高度。可以大大提供`TableView`第一加载时的效率。 
+若未实现，`TableView`在计算总高度时将调用`-tableView:heightForRowAtIndexPath:`获取高度。
+
+```0bject-c
 // Use the estimatedHeight methods to quickly calcuate guessed values which will allow for fast load times of the table.
 // If these methods are implemented, the above -tableView:heightForXXX calls will be deferred until views are ready to be displayed, so more expensive logic can be placed there.
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath NS_AVAILABLE_IOS(7_0);
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForHeaderInSection:(NSInteger)section NS_AVAILABLE_IOS(7_0);
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForFooterInSection:(NSInteger)section NS_AVAILABLE_IOS(7_0);
-监控Cell、HeaderView、FooterView的显示与消失
-当某个Cell、HeaderView、FooterView出现和消失时，都会调用下面的协议方法。
+```
 
+监控`Cell`、`HeaderView`、`FooterView`的显示与消失
+当某个`Cell`、`HeaderView`、`FooterView`出现和消失时，都会调用下面的协议方法。
+
+```object-c
 // Display customization
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath;
@@ -859,10 +874,12 @@ UITableView在显示前需要知道每个Cell的高度，用以计算整个Table
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath NS_AVAILABLE_IOS(6_0);
 - (void)tableView:(UITableView *)tableView didEndDisplayingHeaderView:(UIView *)view forSection:(NSInteger)section NS_AVAILABLE_IOS(6_0);
 - (void)tableView:(UITableView *)tableView didEndDisplayingFooterView:(UIView *)view forSection:(NSInteger)section NS_AVAILABLE_IOS(6_0);
-UITableViewCell分割线顶到左侧
+```
+#### UITableViewCell分割线顶到左侧
+
 在实现UI效果时，常常会遇到分割线需要顶到左侧的情况，按照一般的思路无法实现该效果，现提供一种解决方案如下：
 
-
+```object-c
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
     if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
         [cell setSeparatorInset:UIEdgeInsetsZero];
@@ -893,13 +910,19 @@ UITableViewCell分割线顶到左侧
     }
     return _tableView;
 }
+```
+
 下面的写法无法完整实现靠左的效果。
 
+```object-c
 _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 _tableView.separatorInset = UIEdgeInsetsMake(0, 20, 0, 20);
-索引——IndexList
+```
+#### 索引——`IndexList`
+
 开发过程中，经常遇到List页面要求索引功能。在此简单介绍一下实现逻辑。
 
+```object-c
 // 返回index索引现实需要的数组（NSArray <NSString *> *）
 - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView{
     return @[@"热",@"A",@"B",@"C",@"D",@"E",@"F",@"G",@"H",@"J",@"K",@"L",@"M",@"N",@"O",@"P",@"Q",@"R",@"S",@"T",@"U",@"V",@"W",@"X",@"Y",@"Z"];
@@ -909,24 +932,31 @@ _tableView.separatorInset = UIEdgeInsetsMake(0, 20, 0, 20);
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index{
     return index < self.dataSource.count ? index : 1;
 }
-复用问题
-Cell、HeaderView、FooterView都存在复用问题。复用时，系统会根据其重用标识（ReuseIdentifier）去重用队列中取出已创建好的视图，直接使用，若重用队列中无该标识的Cell、HeaderView、FooterView时，系统会根据需要自行创建，这样可以节省时间、内存，提高性能。
+```
+#### 复用问题
+`Cell`、`HeaderView`、`FooterView`都存在复用问题。复用时，系统会根据其重用标识`（ReuseIdentifier）`去重用队列中取出已创建好的视图，直接使用，若重用队列中无该标识的`Cell`、`HeaderView`、`FooterView`时，系统会根据需要自行创建，这样可以节省时间、内存，提高性能。
+
 在重用Cell时，系统会自动调用Cell的一个方法，让Cell在重用前进行自我清理工作。
 
+```object-c
 - (void)prepareForReuse;
-accessaryView与accessaryType
-当cell的accessaryView时，根据其accessaryType的不同调用的方法不同。
+```
+#### `accessaryView`与`accessaryType`
+当`cell`的`accessaryView`时，根据其`accessaryType`的不同调用的方法不同。
 
-UITableViewCellAccessoryDisclosureIndicator/UITableViewCellAccessoryCheckmark [> / √] 的时候，调用delegate的tableView:didSelectRowAtIndexPath:方法。 
-UITableViewCellAccessoryDetailDisclosureButton/UITableViewCellAccessoryDetailButton [!> / !] 的时候，点击accessaryView将会调用delegate的 tableView:accessoryButtonTappedForRowWithIndexPath:方法。
+> `UITableViewCellAccessoryDisclosureIndicator/UITableViewCellAccessoryCheckmark [> / √] `的时候，调用`delegate`的`tableView:didSelectRowAtIndexPath:`方法。 
+`UITableViewCellAccessoryDetailDisclosureButton/UITableViewCellAccessoryDetailButton [!> / !]` 的时候，点击`accessaryView`将会调用`delegate`的 `tableView:accessoryButtonTappedForRowWithIndexPath:`方法。
 
-accessaryType的定制
-
+#### `accessaryType`的定制
+```object-c
 - (UITableViewCellAccessoryType)tableView:(UITableView *)tableView accessoryTypeForRowWithIndexPath:(NSIndexPath *)indexPath;
-关于菜单——Cell
-长按Cell显示菜单，如复制、粘贴等。
-该菜单调用 tableView:canPerformAction:forRowAtIndexPath:withSender 以确认是否该显示系统菜单选项并调用 tableView:performAction:forRowAtIndexPath:withSender: 当用户选择某个选项时.
+```
 
+#### 关于菜单——Cell
+长按Cell显示菜单，如复制、粘贴等。
+该菜单调用 `tableView:canPerformAction:forRowAtIndexPath:withSender` 以确认是否该显示系统菜单选项并调用 `tableView:performAction:forRowAtIndexPath:withSender: `当用户选择某个选项时.
+
+```object-c
 - (BOOL)tableView:(UITableView *)tableView shouldShowMenuForRowAtIndexPath:(NSIndexPath *)indexPath {
     return YES;
 }
@@ -944,38 +974,45 @@ accessaryType的定制
         [UIPasteboard generalPasteboard].string = [data objectAtIndex:indexPath.row];
     }
 }
-行缩进
-缩进是指ContentView距离Cell左侧的距离。
+```
+#### 行缩进
+缩进是指`ContentView`距离`Cell`左侧的距离。
 
+```object-c
 //行缩进
 -(NSInteger)tableView:(UITableView *)tableView indentationLevelForRowAtIndexPath:(NSIndexPath *)indexPath{ NSUInteger row = [indexPath row]; 
     return row * 5;
 } 
-关于选择
-Cell的高亮管理，即将高亮、已经高亮、已经不高亮分别代理不同的代理方法。
+```
+#### 关于选择
+`Cell`的高亮管理，即将高亮、已经高亮、已经不高亮分别代理不同的代理方法。
 
-Managing Table View Highlighting
+```object-c
+//Managing Table View Highlighting
 - tableView:shouldHighlightRowAtIndexPath:
 - tableView:didHighlightRowAtIndexPath:
 - tableView:didUnhighlightRowAtIndexPath:
+```
 
 Cell的选择与取消选择，分别在将要开始和已经完成时有相应的代理方法。
 
-Managing Selections
+```object-c
+// Managing Selections
 - tableView:willSelectRowAtIndexPath:
 - tableView:didSelectRowAtIndexPath:
 - tableView:willDeselectRowAtIndexPath:
 - tableView:didDeselectRowAtIndexPath:
+```
 
-默认选中某个Cell，点击别处时正常执行代理
-需求：用户停留在买单页面（比如点评闪惠或买单），该页面默认使用一张“优惠券”，要求点击该“优惠券”进入优惠券列表页面，同时选中该优惠价（可根据id识别），点击其它Cell时正常执行相应tableView:didSelectRowAtIndexPath:于tableView:didDeselectRowAtIndexPath:代理方法。
+默认选中某个`Cell`，点击别处时正常执行代理
+需求：用户停留在买单页面（比如点评闪惠或买单），该页面默认使用一张“优惠券”，要求点击该“优惠券”进入优惠券列表页面，同时选中该优惠价（可根据id识别），点击其它`Cell`时正常执行相应`tableView:didSelectRowAtIndexPath:`于`tableView:didDeselectRowAtIndexPath:`代理方法。
 
-此时可以在数据加载完成后，计算出默认应该选中Cell的indexPath，然会tableView调用 selectRowAtIndexPath:animated:scrollPosition:方法即可。
+此时可以在数据加载完成后，计算出默认应该选中`Cell`的`indexPath`，然会`tableView`调用 `selectRowAtIndexPath:animated:scrollPosition:`方法即可。
 
-selectRowAtIndexPath:animated:scrollPosition:特点：
-不调用选中与不选中的代理方法；调用cell的setSelected方法，将Cell设置为选中状态，此时查看tableView的indexPathForSelectedRow属性可得到当前选中的indexPath即为指定Cell的indexPath。
+#### `selectRowAtIndexPath:animated:scrollPosition:`特点：
+不调用选中与不选中的代理方法；调用`cell`的`setSelected`方法，将`Cell`设置为选中状态，此时查看`tableView`的`indexPathForSelectedRow`属性可得到当前选中的`indexPath`即为指定`Cell`的`indexPath`。
 
-性能优化
+#### 性能优化
 a、重用cell
 
 我们都知道申请内存是需要时间，特别是在一段时间内频繁的申请内存将会造成很大的开销，而且上tebleView中cell大部分情况下布局都是一样的，这个时候我们可以通过回收重用机制来提高性能。
@@ -996,7 +1033,7 @@ e、tableView的delegate的方法如非必要，尽量不要实现
 
 tableView的delegate中的很多函数提供了对cell属性的进一步控制，比如每个cell的高度，cell是否可以编辑，支持的edit风格等，如非必要最好不要实现这些方法因为快速的调用这些方法也会影响性能。
 
-　　(以上5点建议，前三点来自苹果官方文档，后两点我自己加的，有什么不对的地方，欢迎指正)
+(以上5点建议，前三点来自苹果官方文档，后两点我自己加的，有什么不对的地方，欢迎指正)
 
 
 http://www.devzhang.com/14464613593730.html
