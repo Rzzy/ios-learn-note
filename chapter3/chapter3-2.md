@@ -235,10 +235,220 @@ UIKIT_EXTERN NSString *const UITableViewSelectionDidChangeNotification;
 #### `UITableViewCell`
 `UITableViewCell`的所有`subView`都应该加载`contentView`上面，以免在编辑时出现UI错误。
 
-#### Edit
+#### `Edit`
 通过从UITableViewCell中派生一个类，可以更深度的定制一个cell，可以指定cell在进入edit模式的时候如何相应等等。最简单的实现方式就是将所有要绘制的内容放到一个定制的subView中，并且重载该subView的drawRect方法直接把要显示的内容绘制出来(这样可以避免subView过多导致的性能瓶颈)，最后再将该subView添加到cell派生类中的contentView中即可。但是这样定制的cell需要注意在数据改变的时候，通过手动调用该subView的setNeedDisplay方法来刷新界面，这个例子可以在苹果的帮助文档中的TableViewSuite工程中找到，这儿就不举例了。
 
+观看这两种定制cell的方法，我们会发现subView都是添加在cell的contentView上面的，而不是直接加到cell上面，这样写也是有原因的。下面我们看一下cell在正常状态下和编辑状态下的构成图：
 
+>用户可自定义Cell的editingAccessoryView属性，以实现编辑状态下的自定义效果。
+
+![](/assets/2012062819321126.png)
+
+进入编辑状态下cell的构成图如下：
+![](/assets/2012062819324942.png)
+
+通过观察上面两幅图片我们可以看出来，当cell在进入编辑状态的时候，contentView会自动的缩放来给Editing control腾出位置。这也就是说如果我们把subView添加到contentView上，如果设置autoresizingMask为更具父view自动缩放的话，cell默认的机制会帮我们处理进入编辑状态的情况。而且在tableView是Grouped样式的时候，会为cell设置一个背景色，如果我们直接添加在cell上面的话，就需要自己考虑到这个背景色的显示问题，如果添加到contentView上，则可以通过view的叠加帮助我们完成该任务。综上，subView最好还是添加到cell的contentView中。
+
+#### `ReOrdering`
+为了使`UITableVeiew`进入`edit`模式以后，如果该`cell`支持`reordering`的话，`reordering`控件就会临时的把`accessaryView`覆盖掉。为了显示`reordering`控件，我们必须将`cell`的`showsReorderControl`属性设置成`YES`，同时实现`dataSource`中的`tableView:moveRowAtIndexPath:toIndexPath:`方法。我们还可以同时通过实现`dataSource`中的 `tableView:canMoveRowAtIndexPath:`返回`NO`，来禁用某一些`cell`的`reordering`功能。
+
+下面看苹果官方的一个reordering流程图：
+![](/assets/2012062819375133.png)
+
+上图中当`tableView`进入到`edit`模式的时候，`tableView`会去对当前可见的`cell`逐个调用`dataSource`的`tableView:canMoveRowAtIndexPath:`方法(此处官方给出的流程图有点儿问题)，决定当前`cell`是否显示`reoedering`控件，当开始进入拖动`cell`进行拖动的时候，每滑动过一个`cell`的时候，会去掉用`delegate`的`tableView:targetIndexPathForMoveFromRowAtIndexPath:toProposedIndexPath:`方法，去判断当前划过的`cell`位置是否可以被替换，如果不行则给出建议的位置。当用户放手时本次`reordering`操作结束，调用`dataSource`中的`tableView:moveRowAtIndexPath:toIndexPath:`方法更新`tableView`对应的数据。
+
+此处给个我写demo中的更新数据的小例子：
+
+`EditTableViewController.h` 文件
+
+```object-c
+#import <UIKit/UIKit.h>
+
+@interface EditTableViewController : UITableViewController
+
+@end
+```
+
+`EditTableViewController.m` 文件
+
+```object-c
+#import "EditTableViewController.h"
+
+@interface EditTableViewController ()
+@property (nonatomic, strong) NSMutableArray *dataSource;
+@end
+
+@implementation EditTableViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    // Uncomment the following line to preserve selection between presentations.
+    // self.clearsSelectionOnViewWillAppear = NO;
+    
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+     self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.title = @"编辑TableView";
+    [self prepareItems];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Private Functions
+- (void)prepareItems{
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStylePlain target:self action:@selector(dismissSelf)];
+}
+
+- (void)dismissSelf{
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (id)deleteObjectWithNSIndexPath:(NSIndexPath *)indexPath{
+    NSMutableArray *array = self.dataSource[indexPath.section];
+    id obj = [array objectAtIndex:indexPath.row];
+    [array removeObjectAtIndex:indexPath.row];
+    return obj;
+}
+
+- (void)insertObject:(NSString *)object inDataSourceAtNSIndexPath:(NSIndexPath *)indexPath{
+    NSMutableArray *array = self.dataSource[indexPath.section];
+    [array insertObject:object atIndex:indexPath.row];
+}
+
+#pragma mark - Table view data source
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return self.dataSource.count;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return ((NSMutableArray*)self.dataSource[section]).count;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"zxw"];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"zxw"];
+    }
+    if (indexPath.section < self.dataSource.count) {
+        NSArray *array = self.dataSource[indexPath.section];
+        if (indexPath.row < array.count) {
+            cell.textLabel.text = self.dataSource[indexPath.section][indexPath.row];
+        }else{
+            NSLog(@"row越界%ld",(long)indexPath.row);
+        }
+    }else{
+        NSLog(@"section越界:%ld",(long)indexPath.section);
+    }
+    
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 40.0;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    return 35.0;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    return @"开始";
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
+    return @"结束";
+}
+
+// 某个Cell是否可以编辑
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
+// 返回Cell的编辑状态
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return indexPath.row % 3;
+}
+
+// Override to support editing the table view.
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // 1. 删除数据
+        // 2. 删除Cell
+        [self deleteObjectWithNSIndexPath:indexPath];
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+        // 1. 插入数据
+        // 2. 插入Cell
+        [self insertObject:@"插入的Cell" inDataSourceAtNSIndexPath:indexPath];
+        [tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+    }
+}
+
+// Override to support rearranging the table view.
+// 移动Cell时调用该方法
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+    /**
+     if(section不变){
+        if(row发生变化){
+            直接交换元素
+        }
+     }else{
+        // 1 取出fromIndexPath位置的数据
+        // 2 删除fromeIndexPath的数据
+        // 3 将存起来的数据插入到toIndexPath的位置
+     }
+     */
+    if (fromIndexPath.section == toIndexPath.section) {
+        if (fromIndexPath.row != toIndexPath.row) {
+            NSMutableArray *array = self.dataSource[fromIndexPath.section];
+            [array exchangeObjectAtIndex:fromIndexPath.row withObjectAtIndex:toIndexPath.row];
+        }
+    }else{
+        NSString *str = [self deleteObjectWithNSIndexPath:fromIndexPath];
+        [self insertObject:str inDataSourceAtNSIndexPath:toIndexPath];
+    }
+}
+
+
+
+// Override to support conditional rearranging of the table view.
+// 某个Cell是否可以移动
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Return NO if you do not want the item to be re-orderable.
+    return indexPath.row % 2;
+}
+
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+#pragma mark - Getter
+- (NSMutableArray *)dataSource{
+    if (!_dataSource) {
+        _dataSource = @[].mutableCopy;
+        for (NSInteger i = 0; i < 5; i++) {
+            NSMutableArray *array = @[].mutableCopy;
+            for (NSInteger j = 0; j < 5; j++) {
+                [array addObject:[NSString stringWithFormat:@"第%ld组，Row:%ld",i ,(long)j]];
+            }
+            [_dataSource addObject:array];
+        }
+    }
+    return _dataSource;
+}
+```
 http://www.devzhang.com/14464613593730.html
 https://www.jianshu.com/p/aa9721e4484d
 
