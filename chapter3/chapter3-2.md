@@ -627,6 +627,378 @@ NS_CLASS_AVAILABLE_IOS(6_0) @interface UITableViewHeaderFooterView : UIView
 
 @end
 ```
+
+#### `UITableViewController`
+`UITableViewController`是系统提供的一个便利类，主要是为了方便我们使用UITableView，该类生成的时候就将自身设置成了其包含的`tableView`的`dataSource`和`delegate`，并创建了很多代理函数的框架，为我们大大的节省了时间，我们可以通过其`tableView`属性获取该`controller`内部维护的`tableView`对象。默认情况下使用`UITableViewController`创建的`tableView`是充满全屏的，如果需要用到`tableView`是不充满全屏的话，我们应该使用`UIViewController`自己创建和维护`tableView`。
+
+`UITableViewController`提供一个初始化函数`initWithStyle:`，根据需要我们可以创建`Plain`或者`Grouped`类型的`tableView`，当我们使用其从`UIViewController`继承来的`init`初始化函数的时候，默认将会我们创建一个`Plain`类型的`tableView`。
+
+`UITableViewController`默认的会在`viewWillAppear`的时候，清空所有选中`cell`，我们可以通过设置`self.clearsSelectionOnViewWillAppear = NO`，来禁用该功能，并在`viewDidAppear`中调用`UIScrollView`的`flashScrollIndicators`方法让滚动条闪动一次，从而提示用户该控件是可以滑动的。
+
+```object-c
+// 源码来源于UIKit->UITableViewController.h
+
+NS_CLASS_AVAILABLE_IOS(2_0) @interface UITableViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder NS_DESIGNATED_INITIALIZER;
+
+@property (nonatomic, strong, null_resettable) UITableView *tableView;
+@property (nonatomic) BOOL clearsSelectionOnViewWillAppear NS_AVAILABLE_IOS(3_2); // defaults to YES. If YES, any selection is cleared in viewWillAppear:
+
+@property (nonatomic, strong, nullable) UIRefreshControl *refreshControl NS_AVAILABLE_IOS(6_0) __TVOS_PROHIBITED;
+
+@end
+```
+### 常用操作
+左划删除
+实现两个方法即可实现左划删除。
+
+```object-c
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // 1. 删除数据
+        // 2. 删除Cell
+        [self deleteObjectWithNSIndexPath:indexPath];
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    }
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return @"取消关注";
+}
+```
+
+左划删除与多选编辑是冲突的。若实现下来两个方法，则将是多选编辑，或者说不能实现左划删除。
+
+```object-c
+// 某个Cell是否可以编辑
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
+// 返回Cell的编辑状态
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return indexPath.row % 3;
+}
+```
+
+关于Cell编辑那些事儿
+开始编辑前、编辑完成后、编辑时Cell是否缩进、滑动删除、滑动多选项、每个Cell的编辑样式都有代理方法。
+
+```object-c
+- tableView:willBeginEditingRowAtIndexPath: // 将要开始编辑
+- tableView:didEndEditingRowAtIndexPath: // 已经结束编辑
+- tableView:editingStyleForRowAtIndexPath: // 返回指定Cell的编辑类型
+- tableView:titleForDeleteConfirmationButtonForRowAtIndexPath: // 左划删除的按钮文本，如“删除”
+- tableView:shouldIndentWhileEditingRowAtIndexPath: // 编辑时是否缩进
+
+// 8.0以后的方法，可以自定义多个左划操作，包括文本与事件的Block
+- (nullable NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath NS_AVAILABLE_IOS(8_0);
+iOS8实现滑动编辑功能。
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{    return YES;
+}
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{    return UITableViewCellEditingStyleDelete;
+}
+-(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewRowAction *layTopRowAction1 = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:@"删除" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+        NSLog(@"点击了删除");
+        [tableView setEditing:NO animated:YES];
+    }];
+     layTopRowAction1.backgroundColor = [UIColor redColor];
+    UITableViewRowAction *layTopRowAction2 = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:@"置顶" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+        NSLog(@"点击了置顶");
+        [tableView setEditing:NO animated:YES];
+    }];
+            layTopRowAction2.backgroundColor = [UIColor greenColor];
+    UITableViewRowAction *layTopRowAction3 = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:@"更多" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+        NSLog(@"点击了更多");
+        [tableView setEditing:NO animated:YES];
+      
+    }];
+    layTopRowAction3.backgroundColor = [UIColor blueColor];
+    NSArray *arr = @[layTopRowAction1,layTopRowAction2,layTopRowAction3];
+    return arr;
+}
+```
+
+Cell的ReOrdering——移动
+在reordering操作时，需要做三件事。
+
+ 1.是否可以移动 > 2. 移动是否合法 > 3. 移动操作。
+
+```object-c
+// 某个Cell是否可以移动
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Return NO if you do not want the item to be re-orderable.
+    return indexPath.row % 2;
+}
+
+// 限制移动是否合法
+- (NSIndexPath *)tableView:(UITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath toProposedIndexPath:(NSIndexPath *)proposedDestinationIndexPath{
+    // 如果是第一个Section或者跨Section移动是非法的，不予移动
+    if (proposedDestinationIndexPath.section == 0 || proposedDestinationIndexPath.section != sourceIndexPath.section) {
+        return sourceIndexPath;
+    }else{
+        return proposedDestinationIndexPath;
+    }
+}
+
+// 移动Cell时调用该方法
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+    /**
+     if(section不变){
+        if(row发生变化){
+            直接交换元素
+        }
+     }else{
+        // 1 取出fromIndexPath位置的数据
+        // 2 删除fromeIndexPath的数据
+        // 3 将存起来的数据插入到toIndexPath的位置
+     }
+     */
+    if (fromIndexPath.section == toIndexPath.section) {
+        if (fromIndexPath.row != toIndexPath.row) {
+            NSMutableArray *array = self.dataSource[fromIndexPath.section];
+            [array exchangeObjectAtIndex:fromIndexPath.row withObjectAtIndex:toIndexPath.row];
+        }
+    }else{
+        NSString *str = [self deleteObjectWithNSIndexPath:fromIndexPath];
+        [self insertObject:str inDataSourceAtNSIndexPath:toIndexPath];
+    }
+}
+```
+
+#### 选择与编辑时的几个属性
+一般在做支付方式选择时，可以选择不可多选。即（allowsSelection = YES; self.tableView.allowsMultipleSelection = NO）,UITableView默认就是不可多选的。
+
+若是编辑某个列表页时，要求可以多选、删除操作时，需要设置self.tableView.allowsMultipleSelectionDuringEditing = YES。
+
+self.tableView.allowsSelection = YES; // 默认YES，当Cell在非编辑状态时，是否可以被选择
+self.tableView.allowsSelectionDuringEditing = YES; // 默认NO,当Cell在编辑状态时，是否可以被选择
+self.tableView.allowsMultipleSelection = YES; // 默认NO,当Cell在非编辑状态时，是否可以多选
+self.tableView.allowsMultipleSelectionDuringEditing = YES; // 默认NO,当Cell在编辑状态时，是否可以多选
+
+@property (nonatomic) BOOL allowsSelection NS_AVAILABLE_IOS(3_0);  // default is YES. Controls whether rows can be selected when not in editing mode
+@property (nonatomic) BOOL allowsSelectionDuringEditing;                                 // default is NO. Controls whether rows can be selected when in editing mode
+@property (nonatomic) BOOL allowsMultipleSelection NS_AVAILABLE_IOS(5_0);                // default is NO. Controls whether multiple rows can be selected simultaneously
+@property (nonatomic) BOOL allowsMultipleSelectionDuringEditing NS_AVAILABLE_IOS(5_0);   // default is NO. Controls whether multiple rows can be selected simultaneously in editing mode
+多选
+
+设置UITableView的allowsMultipleSelectionDuringEditing为YES即可在编辑时支持多选。
+
+批量操作 （插入、删除、更新）
+// 记得在操作时对数据源进行相应操作
+[self.tableView beginUpdates];
+    
+NSIndexSet *sigleSet = [NSIndexSet indexSetWithIndex:0];
+NSIndexSet *mutipSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 2)];
+    
+[self.tableView insertSections:sigleSet withRowAnimation:UITableViewRowAnimationTop];
+[self.tableView deleteSections:mutipSet withRowAnimation:UITableViewRowAnimationFade];
+[self.tableView reloadSections:sigleSet withRowAnimation:UITableViewRowAnimationNone];
+[self.tableView moveSection:0 toSection:1];
+    
+NSArray *indexPaths = [NSArray arrayWithObjects:[NSIndexPath indexPathForRow:0 inSection:1],
+                                                [NSIndexPath indexPathForRow:0 inSection:2],
+                                                [NSIndexPath indexPathForRow:0 inSection:3],nil];
+[self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+[self.tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationBottom];
+[self.tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
+[self.tableView moveRowAtIndexPath:[NSIndexPath indexPathForRow:3 inSection:0] toIndexPath:[NSIndexPath indexPathForRow:2 inSection:2]];
+    
+[self.tableView endUpdates];
+
+
+
+// 下方为系统UITableView.h的方法
+// Row insertion/deletion/reloading.
+
+- (void)beginUpdates;   // allow multiple insert/delete of rows and sections to be animated simultaneously. Nestable
+- (void)endUpdates;     // only call insert/delete/reload calls or change the editing state inside an update block.  otherwise things like row count, etc. may be invalid.
+
+- (void)insertSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation;
+- (void)deleteSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation;
+- (void)reloadSections:(NSIndexSet *)sections withRowAnimation:(UITableViewRowAnimation)animation NS_AVAILABLE_IOS(3_0);
+- (void)moveSection:(NSInteger)section toSection:(NSInteger)newSection NS_AVAILABLE_IOS(5_0);
+
+- (void)insertRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation;
+- (void)deleteRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation;
+- (void)reloadRowsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation NS_AVAILABLE_IOS(3_0);
+- (void)moveRowAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath NS_AVAILABLE_IOS(5_0);
+自定义HeaderVeiw、FooterView
+实现如下代理方法即可：
+
+// Section header & footer information. Views are preferred over title should you decide to provide both
+
+- (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section;   // custom view for header. will be adjusted to default or specified header height
+- (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section;   // custom view for footer. will be adjusted to default or specified footer height
+估算Cell、HeaderVeiw、FooterView的高度
+UITableView在显示前需要知道每个Cell的高度，用以计算整个TableView的总高度，而后才开始渲染视图并显示在屏幕上。
+
+若实现-tableView:estimatedHeightXXX 协议方法，TableView在计算总高度时将调用-tableView estimatedHeightForRowAtIndexPath:，先显示TableView，当滑动到某个Cell时，会调用-tableView:heightForRowAtIndexPath:获得Cell的真正高度。可以大大提供TableView第一加载时的效率。 
+若未实现，TableView在计算总高度时将调用-tableView:heightForRowAtIndexPath:获取高度。
+
+// Use the estimatedHeight methods to quickly calcuate guessed values which will allow for fast load times of the table.
+// If these methods are implemented, the above -tableView:heightForXXX calls will be deferred until views are ready to be displayed, so more expensive logic can be placed there.
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath NS_AVAILABLE_IOS(7_0);
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForHeaderInSection:(NSInteger)section NS_AVAILABLE_IOS(7_0);
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForFooterInSection:(NSInteger)section NS_AVAILABLE_IOS(7_0);
+监控Cell、HeaderView、FooterView的显示与消失
+当某个Cell、HeaderView、FooterView出现和消失时，都会调用下面的协议方法。
+
+// Display customization
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section NS_AVAILABLE_IOS(6_0);
+- (void)tableView:(UITableView *)tableView willDisplayFooterView:(UIView *)view forSection:(NSInteger)section NS_AVAILABLE_IOS(6_0);
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath NS_AVAILABLE_IOS(6_0);
+- (void)tableView:(UITableView *)tableView didEndDisplayingHeaderView:(UIView *)view forSection:(NSInteger)section NS_AVAILABLE_IOS(6_0);
+- (void)tableView:(UITableView *)tableView didEndDisplayingFooterView:(UIView *)view forSection:(NSInteger)section NS_AVAILABLE_IOS(6_0);
+UITableViewCell分割线顶到左侧
+在实现UI效果时，常常会遇到分割线需要顶到左侧的情况，按照一般的思路无法实现该效果，现提供一种解决方案如下：
+
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    }
+    
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        [cell setLayoutMargins:UIEdgeInsetsZero];
+    }
+}
+
+- (UITableView *)tableView{
+    if (!_tableView) {
+        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+        [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"identifier"];
+        _tableView.rowHeight = 44.0;
+        
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        if ([_tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+            [_tableView setSeparatorInset:UIEdgeInsetsZero];
+        }
+        
+        if ([_tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+            [_tableView setLayoutMargins:UIEdgeInsetsZero];
+        }
+        _tableView.separatorColor = [NWUtility colorWithHex:0xDCDCDC];
+    }
+    return _tableView;
+}
+下面的写法无法完整实现靠左的效果。
+
+_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+_tableView.separatorInset = UIEdgeInsetsMake(0, 20, 0, 20);
+索引——IndexList
+开发过程中，经常遇到List页面要求索引功能。在此简单介绍一下实现逻辑。
+
+// 返回index索引现实需要的数组（NSArray <NSString *> *）
+- (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView{
+    return @[@"热",@"A",@"B",@"C",@"D",@"E",@"F",@"G",@"H",@"J",@"K",@"L",@"M",@"N",@"O",@"P",@"Q",@"R",@"S",@"T",@"U",@"V",@"W",@"X",@"Y",@"Z"];
+}
+
+// 根据点击index索引返回UITableView的Section
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index{
+    return index < self.dataSource.count ? index : 1;
+}
+复用问题
+Cell、HeaderView、FooterView都存在复用问题。复用时，系统会根据其重用标识（ReuseIdentifier）去重用队列中取出已创建好的视图，直接使用，若重用队列中无该标识的Cell、HeaderView、FooterView时，系统会根据需要自行创建，这样可以节省时间、内存，提高性能。
+在重用Cell时，系统会自动调用Cell的一个方法，让Cell在重用前进行自我清理工作。
+
+- (void)prepareForReuse;
+accessaryView与accessaryType
+当cell的accessaryView时，根据其accessaryType的不同调用的方法不同。
+
+UITableViewCellAccessoryDisclosureIndicator/UITableViewCellAccessoryCheckmark [> / √] 的时候，调用delegate的tableView:didSelectRowAtIndexPath:方法。 
+UITableViewCellAccessoryDetailDisclosureButton/UITableViewCellAccessoryDetailButton [!> / !] 的时候，点击accessaryView将会调用delegate的 tableView:accessoryButtonTappedForRowWithIndexPath:方法。
+
+accessaryType的定制
+
+- (UITableViewCellAccessoryType)tableView:(UITableView *)tableView accessoryTypeForRowWithIndexPath:(NSIndexPath *)indexPath;
+关于菜单——Cell
+长按Cell显示菜单，如复制、粘贴等。
+该菜单调用 tableView:canPerformAction:forRowAtIndexPath:withSender 以确认是否该显示系统菜单选项并调用 tableView:performAction:forRowAtIndexPath:withSender: 当用户选择某个选项时.
+
+- (BOOL)tableView:(UITableView *)tableView shouldShowMenuForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+ 
+- (BOOL)tableView:(UITableView *)tableView canPerformAction:(SEL)action forRowAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+    if (action == @selector(copy:)) {
+        return YES;     
+    }
+     
+    return NO;  
+}
+ 
+- (void)tableView:(UITableView *)tableView performAction:(SEL)action forRowAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+    if (action == @selector(copy:)) {
+        [UIPasteboard generalPasteboard].string = [data objectAtIndex:indexPath.row];
+    }
+}
+行缩进
+缩进是指ContentView距离Cell左侧的距离。
+
+//行缩进
+-(NSInteger)tableView:(UITableView *)tableView indentationLevelForRowAtIndexPath:(NSIndexPath *)indexPath{ NSUInteger row = [indexPath row]; 
+    return row * 5;
+} 
+关于选择
+Cell的高亮管理，即将高亮、已经高亮、已经不高亮分别代理不同的代理方法。
+
+Managing Table View Highlighting
+- tableView:shouldHighlightRowAtIndexPath:
+- tableView:didHighlightRowAtIndexPath:
+- tableView:didUnhighlightRowAtIndexPath:
+
+Cell的选择与取消选择，分别在将要开始和已经完成时有相应的代理方法。
+
+Managing Selections
+- tableView:willSelectRowAtIndexPath:
+- tableView:didSelectRowAtIndexPath:
+- tableView:willDeselectRowAtIndexPath:
+- tableView:didDeselectRowAtIndexPath:
+
+默认选中某个Cell，点击别处时正常执行代理
+需求：用户停留在买单页面（比如点评闪惠或买单），该页面默认使用一张“优惠券”，要求点击该“优惠券”进入优惠券列表页面，同时选中该优惠价（可根据id识别），点击其它Cell时正常执行相应tableView:didSelectRowAtIndexPath:于tableView:didDeselectRowAtIndexPath:代理方法。
+
+此时可以在数据加载完成后，计算出默认应该选中Cell的indexPath，然会tableView调用 selectRowAtIndexPath:animated:scrollPosition:方法即可。
+
+selectRowAtIndexPath:animated:scrollPosition:特点：
+不调用选中与不选中的代理方法；调用cell的setSelected方法，将Cell设置为选中状态，此时查看tableView的indexPathForSelectedRow属性可得到当前选中的indexPath即为指定Cell的indexPath。
+
+性能优化
+a、重用cell
+
+我们都知道申请内存是需要时间，特别是在一段时间内频繁的申请内存将会造成很大的开销，而且上tebleView中cell大部分情况下布局都是一样的，这个时候我们可以通过回收重用机制来提高性能。
+
+b、避免content的重新布局
+
+尽量避免在重用cell时候，对cell的重新布局，一般情况在在创建cell的时候就将cell布局好。
+
+c、使用不透明的subView
+
+在定制cell的时候，将要添加的subView设置成不透明的会大大减少多个view层叠加时渲染所需要的时间。
+
+d、如果方便，直接重载subView的drawRect方法
+
+如果定制cell的过程中需要多个小的元素的话，最好直接对要显示的多个项目进行绘制，而不是采用添加多个subView。
+
+e、tableView的delegate的方法如非必要，尽量不要实现
+
+tableView的delegate中的很多函数提供了对cell属性的进一步控制，比如每个cell的高度，cell是否可以编辑，支持的edit风格等，如非必要最好不要实现这些方法因为快速的调用这些方法也会影响性能。
+
+　　(以上5点建议，前三点来自苹果官方文档，后两点我自己加的，有什么不对的地方，欢迎指正)
+
+
 http://www.devzhang.com/14464613593730.html
 https://www.jianshu.com/p/aa9721e4484d
 
